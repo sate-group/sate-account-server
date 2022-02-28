@@ -5,12 +5,12 @@ import {
 } from 'class-validator';
 
 export class SignUpDto {
+  @IsEmail()
+  email: string;
+
   @IsString()
   @IsNotEmpty()
   username: string;
-
-  @IsEmail()
-  email: string;
 
   @IsString()
   @IsNotEmpty()

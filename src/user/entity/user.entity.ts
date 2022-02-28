@@ -38,7 +38,7 @@ export class User {
   displayName: string;
 
   @Column({ nullable: true })
-  mention: string;  // like description
+  mention: string; // like description
 
   @Column({ nullable: true })
   photoUrl: string;

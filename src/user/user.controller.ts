@@ -12,18 +12,24 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('signup')
-  signUp(@Body() signUpDto: SignUpDto): Promise<User> {
-    return;
+  async signUp(@Body() signUpDto: SignUpDto): Promise<GetTokenDto> {
+    return await this.userService.signUp(signUpDto);
   }
 
   @Post('signin')
-  signIn(@Body() signInDto: SignInDto): Promise<GetTokenDto> {
-    return;
+  async signIn(@Body() signInDto: SignInDto): Promise<GetTokenDto> {
+    return this.userService.signIn(signInDto);
   }
 
-  @Get('getuser')
+
+  @Get('myprofile')
   @UseGuards(JwtAuthGuard)
-  async readOwnInfo(@GetUser() user: User): Promise<User> {
-    return user;
+  async getMyProfile(@GetUser() me: User): Promise<User> {
+    return me;
+  }
+
+  @Get('search')
+  async getUserInfo(): Promise<User> {
+    return ;
   }
 }
