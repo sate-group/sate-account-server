@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { GetUser } from './decorator/get-user.decorator';
-import { GetTokenDto } from './dto/get-token.dto';
-import { SignInDto } from './dto/sign-in.dto';
-import { SignUpDto } from './dto/sign-up.dto';
 import { User } from './entity/user.entity';
-import { JwtAuthGuard } from './jwt/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { UserService } from './user.service';
+import { GetTokenDto } from 'src/auth/dto/get-token.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { GetUserId } from './decorator/get-user-id.decorator';
 
 @Controller('user')
 export class UserController {
@@ -21,15 +21,15 @@ export class UserController {
     return this.userService.signIn(signInDto);
   }
 
-
   @Get('myprofile')
   @UseGuards(JwtAuthGuard)
-  async getMyProfile(@GetUser() me: User): Promise<User> {
-    return me;
+  async getMyProfile(@GetUserId() userId: string): Promise<User> {
+    const user = await this.userService.findById(userId);
+    return user;
   }
 
   @Get('search')
   async getUserInfo(): Promise<User> {
-    return ;
+    return;
   }
 }

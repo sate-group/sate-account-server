@@ -4,21 +4,21 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { GetTokenDto } from './dto/get-token.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { GetTokenDto } from 'src/auth/dto/get-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { User } from './entity/user.entity';
-import * as bcrypt from 'bcryptjs';
-import { JwtPayload } from './jwt/jwt-payload.interface';
-import { validate as emailValidate } from 'email-validator';
 import { UserRepository } from './repository/user.repository';
+import { validate as emailValidate } from 'email-validator';
+import * as bcrypt from 'bcryptjs';
+import { JwtPayloadKey } from 'src/auth/jwt/jwt-payload-key.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
-    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<GetTokenDto> {
@@ -39,8 +39,10 @@ export class UserService {
       hashedPassword,
       displayName: username,
     });
-
-    return await this.getAccessToken(user);
+    const payloadKey: JwtPayloadKey = {
+      userId: user.id,
+    };
+    return await this.authService.generateAccessToken(payloadKey);
   }
 
   async signIn(signInDto: SignInDto): Promise<GetTokenDto> {
@@ -49,19 +51,21 @@ export class UserService {
       ? await this.findByEmail(emailOrUsername)
       : await this.findByUsername(emailOrUsername);
 
+    if (!user) throw new NotFoundException('User not exists');
+
     const checkPassword = await bcrypt.compare(password, user.hashedPassword);
     if (!checkPassword) throw new UnauthorizedException('Wrong password');
 
-    return await this.getAccessToken(user);
+    const payloadKey: JwtPayloadKey = {
+      userId: user.id,
+    };
+    return await this.authService.generateAccessToken(payloadKey);
   }
 
-  async getAccessToken(user: User): Promise<GetTokenDto> {
-    const payload: JwtPayload = { ...user };
-    const accessToken = await this.jwtService.sign(payload);
-
-    return { accessToken };
+  async findById(id: string): Promise<User> {
+    const user = await this.userRepo.findOne({ id });
+    return user;
   }
-
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepo.findOne({ email });
     return user;

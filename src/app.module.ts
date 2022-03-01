@@ -17,9 +17,7 @@ const options: TypeOrmModuleOptions = {
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(options),
     UserModule,
   ],
