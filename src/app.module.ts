@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { UserModule } from './user/user.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 const options: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -20,6 +21,7 @@ const options: TypeOrmModuleOptions = {
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(options),
     UserModule,
+    AuthModule
   ],
 })
 export class AppModule {}

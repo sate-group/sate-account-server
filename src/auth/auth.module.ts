@@ -5,21 +5,22 @@ import { jwtConstants } from './jwt/jwt-constants';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
-import { UserService } from 'src/user/user.service';
-import { UserModule } from 'src/user/user.module';
-import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserRepository } from 'src/user/repository/user.repository';
+import { AuthController } from './auth.controller';
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forFeature([UserRepository]),
     /**
      * for auth
      */
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '24h' },
     }),
     PassportModule,
   ],
+  controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtAuthGuard],
   exports: [AuthService, JwtStrategy, JwtAuthGuard],
 })

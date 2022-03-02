@@ -1,3 +1,4 @@
+import { url } from 'inspector';
 import {
   Column,
   CreateDateColumn,
@@ -33,9 +34,6 @@ export class User {
   /**
    * additional information
    */
-
-  @Column()
-  displayName: string;
 
   @Column({ nullable: true })
   mention: string; // like description

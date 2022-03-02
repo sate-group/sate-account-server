@@ -1,35 +1,22 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { User } from './entity/user.entity';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { UserService } from './user.service';
-import { GetTokenDto } from 'src/auth/dto/get-token.dto';
-import { SignUpDto } from './dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { GetUserId } from './decorator/get-user-id.decorator';
+import { GetUserProfileDto } from './dto/get-user-profile.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('signup')
-  async signUp(@Body() signUpDto: SignUpDto): Promise<GetTokenDto> {
-    return await this.userService.signUp(signUpDto);
-  }
-
-  @Post('signin')
-  async signIn(@Body() signInDto: SignInDto): Promise<GetTokenDto> {
-    return this.userService.signIn(signInDto);
+  @Post('register')
+  async signUp(@Body() registerUserDto: RegisterUserDto): Promise<void> {
+    return await this.userService.signUp(registerUserDto);
   }
 
   @Get('myprofile')
   @UseGuards(JwtAuthGuard)
-  async getMyProfile(@GetUserId() userId: string): Promise<User> {
-    const user = await this.userService.findById(userId);
-    return user;
-  }
-
-  @Get('search')
-  async getUserInfo(): Promise<User> {
-    return;
+  async getMyProfile(@GetUserId() userId: string): Promise<GetUserProfileDto> {
+    return await this.userService.findProfileById(userId);
   }
 }
