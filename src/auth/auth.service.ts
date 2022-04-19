@@ -32,7 +32,9 @@ export class AuthService {
     return await this.generateAccessToken(payloadKey);
   }
 
-
+  async checkToken(): Promise<boolean> {
+    return
+  }
 
   async generateAccessToken(payloadKey: JwtPayloadKey): Promise<GetTokenDto> {
     const payload: JwtPayloadKey = payloadKey;
